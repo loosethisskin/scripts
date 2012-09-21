@@ -1,0 +1,26 @@
+#!/bin/bash
+
+SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
+if [ ! -f $SCRIPT_DIR/common.sh ]; then
+  echo "$SCRIPT_DIR/common.sh not found."
+  exit 1
+fi
+. $SCRIPT_DIR/common.sh
+
+for d in `find . -type d -name .git | sort -V`
+do
+  cd $d/..
+
+  remotes=""
+  for b in `git remote`
+  do
+  if [ -z "$remotes" ]; then
+    remotes="$b"
+  else
+    remotes="$remotes $b"
+  fi
+  done
+  echo "$(get_repo_name $d): $remotes"
+
+  cd - > /dev/null
+done

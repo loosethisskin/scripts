@@ -1,0 +1,27 @@
+#!/bin/bash
+
+SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
+if [ ! -f $SCRIPT_DIR/common.sh ]; then
+  echo "$SCRIPT_DIR/common.sh not found."
+  exit 1
+fi
+. $SCRIPT_DIR/common.sh
+
+#function get_repo_name()
+#{
+#if [ "$1" == "./.git" ]; then
+#  echo .
+#else
+#  echo $1 | sed -e 's/^.\///' -e 's/\/.git$//'
+#fi
+#}
+
+for d in `find . -type d -name .git | sort -V`
+do
+  cd $d/..
+  echo ""
+  #echo "Repository => $d" | sed -e 's/\/.git$//'
+  echo "Repository => $(get_repo_name $d)"
+  #echo "Reponame = $(get_repo_name $d)"
+  cd - > /dev/null
+done

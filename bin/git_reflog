@@ -1,0 +1,23 @@
+#!/bin/bash
+
+SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
+if [ ! -f $SCRIPT_DIR/common.sh ]; then
+  echo "$SCRIPT_DIR/common.sh not found."
+  exit 1
+fi
+. $SCRIPT_DIR/common.sh
+
+if [ "$1" == "-r" ]; then
+  for d in `find . -type d -name .git | sort -V`
+  do
+    cd $d/..
+    echo ""
+    echo "Repository => $(get_repo_name $d)"
+    #echo "# $d" | sed -e 's/\/.git$//'
+  	#git reflog show `git branch | grep "^*" | sed -e 's/* //'` --date=local | head -100000
+  	git reflog show `git branch | grep "^*" | sed -e 's/* //'` --date=local | sed -e 's/.*/  &/'
+    cd - > /dev/null
+  done
+else
+  git reflog show `git branch | grep "^*" | sed -e 's/* //'` --date=local
+fi

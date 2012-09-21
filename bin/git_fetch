@@ -1,0 +1,35 @@
+#!/bin/bash
+
+SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
+if [ ! -f $SCRIPT_DIR/common.sh ]; then
+  echo "$SCRIPT_DIR/common.sh not found."
+  exit 1
+fi
+. $SCRIPT_DIR/common.sh
+
+if [ "$1" == "--all" ] || [ "$1" == "-all" ] || [ "$1" == "-a" ]; then
+  option="-a"
+  shift
+fi
+
+for d in `find . -type d -name .git | sort -V`
+do
+  cd $d/..
+  if [ "$option" == "-a" ]; then
+    echo ""
+    echo "Repository => $(get_repo_name $d)"
+    git fetch --all $* | sed -e 's/.*/  &/'
+  elif [ ! -z "$1" ]; then
+    for remote in `git remote | grep "$1"`
+    do
+		  echo ""
+      echo "Repository => $(get_repo_name $d)"
+      echo "  Fetching $remote"
+      git fetch $remote | sed -e 's/.*/  &/'
+    done
+  else
+    echo "Repository => $(get_repo_name $d)"
+    git fetch | sed -e 's/.*/  &/'
+  fi
+  cd - > /dev/null
+done

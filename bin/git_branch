@@ -1,0 +1,21 @@
+#!/bin/bash
+
+SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
+if [ ! -f $SCRIPT_DIR/common.sh ]; then
+  echo "$SCRIPT_DIR/common.sh not found."
+  exit 1
+fi
+. $SCRIPT_DIR/common.sh
+
+for d in `find . -type d -name .git | sort -V`
+do
+  cd $d/..
+  echo ""
+  echo "Repository => $(get_repo_name $d)"
+  if [ -z "$1" ]; then
+    git branch | sed -e 's/.*/  &/'
+  else
+    git branch $* | sed -e 's/.*/  &/'
+  fi
+  cd - > /dev/null
+done

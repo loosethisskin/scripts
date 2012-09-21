@@ -1,0 +1,26 @@
+#!/bin/bash
+
+SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
+if [ ! -f $SCRIPT_DIR/common.sh ]; then
+  echo "$SCRIPT_DIR/common.sh not found."
+  exit 1
+fi
+. $SCRIPT_DIR/common.sh
+
+for d in `find . -type d -name .git | sort -V`
+do
+  cd $d/..
+
+  branches=""
+  for b in `git branch | awk '{ print $NF }'`
+  do
+  if [ -z "$branches" ]; then
+    branches="$b"
+  else
+    branches="$branches $b"
+  fi
+  done
+  echo "$(get_repo_name $d): $branches"
+
+  cd - > /dev/null
+done
