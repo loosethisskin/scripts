@@ -1,0 +1,10 @@
+#!/bin/bash
+
+PIDS=`ps -ef |grep "python -E" |grep -v " grep " |awk '{print $2}'`
+if [ ! -z "$PIDS" ]; then
+  echo kill $PIDS
+  kill $PIDS
+else
+  echo "Nothing to kill"
+fi
+
